@@ -1,0 +1,3 @@
+[submodule "sources/jdb"]
+	path = sources/jdb
+	url = git@github.com:Trisconta/jdb.git
