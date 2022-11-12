@@ -1,3 +1,6 @@
 [submodule "sources/jdb"]
 	path = sources/jdb
 	url = git@github.com:Trisconta/jdb.git
+[submodule "rsamples"]
+	path = rsamples
+	url = git@github.com:serrasqueiro/rsamples.git
