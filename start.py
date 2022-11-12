@@ -10,6 +10,10 @@ It creates infrastructure at user home: .realestate.conf
 import sys
 import os
 import tempfile
+
+MY_START_DIR = os.path.realpath(os.path.dirname(__file__))
+sys.path.append(os.path.join(MY_START_DIR, "sources", "jdb", "src", "packages"))
+
 import jdba
 from jdba.jbox import JBox
 
@@ -32,14 +36,28 @@ TEMPL_MAIN = {
 }
 
 def main():
-    do_run(sys.argv[1:])
+    code = do_run(sys.argv[1:])
+    if code is None:
+        print(f"""Usage:
+{__file__} [conf-path] [dir-main-infos]
+
+If conf-path is '@', home directory will be adopted.
+
+dir-main-infos is optional, if specified is the directory basename;
+should be an absolute path.
+
+Configuration filename is {PRE_NAME}
+""")
+    sys.exit(code if code else 0)
 
 def do_run(args):
-    param = args
-    if 0 < len(param) < 2:
-        print("One or two args expected!")
+    param = args if args else ["@"]
+    if len(param) > 2:
+        print("Only up to two args expected!")
         return None
     first = param[0]
+    if first in ("-h", "--help"):
+        return None
     del param[0]
     if param:
         dir_main_infos = param[0]
