@@ -54,6 +54,22 @@ Configuration filename is {PRE_NAME}
 """)
     sys.exit(code if code else 0)
 
+def default_conf_path():
+    return os.path.join(home_dir(), PRE_NAME)
+
+def my_get_config(fname:str):
+    confbox = JBox("confjson")
+    confbox.load(fname)
+    opts = confbox.raw()
+    assert isinstance(opts, dict)
+    return opts
+
+def get_db():
+    where = my_get_config(default_conf_path())["dir-main-infos"]
+    dbx = Database(where)
+    print("Boxes:", dbx.table_names())
+    return dbx
+
 def do_run(args):
     param = args if args else ["@"]
     if len(param) > 2:
@@ -74,12 +90,11 @@ def do_run(args):
         ""
         "~": None,
     }
-    conf = first if first != "@" else os.path.join(home_dir(), PRE_NAME)
+    conf = first if first != "@" else default_conf_path()
     code = do_start(conf, opts)
     if code <= -1:
-        confbox = JBox("confjson")
-        confbox.load(conf)
-        opts = confbox.raw()
+        opts = my_get_config(conf)
+        copier(opts)
     elif code:
         return code
     print("==" * 20)
@@ -119,24 +134,32 @@ def config_creator(out, opts):
     if not opts["dir-gd-refs"]:
         gdrefs = get_gd_refs_location().replace("\\", "/")
         opts["dir-gd-refs"] = gdrefs
-        print(f"Copying {gdrefs}/*.json into {dir_main_infos}")
-        dbin = Database(gdrefs, name="gd-input!", has_schema=False)
-        assert dbin.basic_ok(), dbin.name
-        for boxname in ("gd_refs",):
-            path_in = dbin.path_refs()[boxname]
-            path_out = os.path.join(dir_main_infos, f"{boxname}.json")
-            jbx = JBox()
-            print("Input:", path_in, "; output:", path_out)
-            is_ok = jbx.load(path_in)
-            if is_ok:
-                is_ok = jbx.save(path_out)
-                print(f"Copied to: {path_out}, ok? {is_ok}")
+    copier(opts)
     #print("# dir_main_infos:", dir_main_infos)
     opts["dir-main-infos"] = dir_main_infos
     opts["path-main-refs"] = dir_main_infos + "/" + "main_refs.json"
     son = JBox(opts, "config")
     son.save_stream(out)
     return 0, ""
+
+def copier(opts) -> str:
+    """ Returns the path copy output """
+    dir_main_infos = opts["dir-main-infos"]
+    gdrefs = opts["dir-gd-refs"]
+    print(f"Copying {gdrefs}/*.json into {dir_main_infos}")
+    dbin = Database(gdrefs, name="gd-input!", has_schema=False)
+    assert dbin.basic_ok(), dbin.name
+    path_out = ""
+    for boxname in ("gd_refs",):
+        path_in = dbin.path_refs()[boxname]
+        path_out = os.path.join(dir_main_infos, f"{boxname}.json")
+        jbx = JBox()
+        print("Input:", path_in, "; output:", path_out)
+        is_ok = jbx.load(path_in)
+        if is_ok:
+            is_ok = jbx.save(path_out)
+            print(f"Copied to: {path_out}, ok? {is_ok}")
+    return path_out
 
 def go_ahead(opts) -> int:
     assert opts
@@ -192,18 +215,20 @@ def sampled_database(opts) -> tuple:
         print(dbx.name, "schema is valid!")
     assert is_ok, dbx.name
     jbx = dbx.table("main_refs")
+    gdx = dbx.table("gd_refs")
     keying = sorted(jbx.dlist.index.byname)
     ptrs = jbx.dlist.index.byname["ptr"]
     aptr = sorted(ptrs)
+    acase = "Refs"
     print(f"Keying: {keying}, byname ptr: {aptr}")
-    ref_list = ptrs["Refs"]
+    ref_list = ptrs[acase]
     for idx, aref in enumerate(ref_list, 1):
         if "~" in aref:
             del aref["~"]
         an_id = aref["Id"]
         if an_id <= 0:
             break
-        print(aref)
+        print(f"{jbx.name}.{acase} idx={idx}", aref)
     return 0, ""
 
 def get_gd_refs_location():
