@@ -138,6 +138,7 @@ def config_creator(out, opts):
     #print("# dir_main_infos:", dir_main_infos)
     opts["dir-main-infos"] = dir_main_infos
     opts["path-main-refs"] = dir_main_infos + "/" + "main_refs.json"
+    opts["cond-excel"] = ""
     son = JBox(opts, "config")
     son.save_stream(out)
     return 0, ""
