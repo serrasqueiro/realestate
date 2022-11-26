@@ -4,3 +4,6 @@
 [submodule "rsamples"]
 	path = rsamples
 	url = git@github.com:serrasqueiro/rsamples.git
+[submodule "sources/unidecode"]
+	path = sources/unidecode
+	url = git@github.com:Trisconta/unidecode.git
