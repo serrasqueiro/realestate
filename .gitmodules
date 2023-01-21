@@ -7,3 +7,6 @@
 [submodule "sources/unidecode"]
 	path = sources/unidecode
 	url = git@github.com:Trisconta/unidecode.git
+[submodule "sources/private/contactos"]
+	path = sources/private/contactos
+	url = ../contactos.git
