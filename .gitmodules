@@ -3,7 +3,7 @@
 	url = git@github.com:Trisconta/jdb.git
 [submodule "rsamples"]
 	path = rsamples
-	url = git@github.com:serrasqueiro/rsamples.git
+	url = ../rsamples.git
 [submodule "sources/unidecode"]
 	path = sources/unidecode
 	url = git@github.com:Trisconta/unidecode.git
