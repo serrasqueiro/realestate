@@ -10,3 +10,6 @@
 [submodule "sources/private/contactos"]
 	path = sources/private/contactos
 	url = ../contactos.git
+[submodule "external/snippets/dividas"]
+	path = external/snippets/dividas
+	url = git@gist.github.com:5808ca276be64b4ec75e42c58f24c608.git
