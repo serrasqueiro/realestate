@@ -10,6 +10,3 @@
 [submodule "sources/private/contactos"]
 	path = sources/private/contactos
 	url = ../contactos.git
-[submodule "external/snippets/dividas"]
-	path = external/snippets/dividas
-	url = git@github.com:Trisconta/dividas.git
